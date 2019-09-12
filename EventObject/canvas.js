@@ -1,14 +1,13 @@
 var canvas = document.querySelector('canvas');
 var ctx = canvas.getContext('2d');
+
 canvas.width = window.innerWidth-2;
 canvas.height = window.innerHeight-2;
 
 var mouse = {
-	x : undefined,
-	y : undefined
+	x : innerWidth / 2,
+	y : innerHeight / 2
 }
-
-var maxRadius = 40;
 
 var colorArray = [
 	'#14080E',
@@ -18,6 +17,10 @@ var colorArray = [
 	'#E9EB9E'
 ];
 
+var gravity = 1;
+var friction = 0.90;
+
+// Event Listener
 window.addEventListener('mousemove', function(event){
 	mouse.x = event.x;
 	mouse.y = event.y;
@@ -30,87 +33,100 @@ window.addEventListener('resize', function(){
 	init();
 });
 
+
+addEventListener("click", function(){
+	init();
+});
+
+/**Utility Functions **/
+/**
+ * Función que genera un código de RGB random, generada independiente al tutorial
+ * @return {String} [Retorno de 7 caracteres]
+ */
 function randomColor(){
 	return "#"+ Math.floor( Math.random() * 255 ) + ""+ Math.floor( Math.random() * 255 ) + ""+ Math.floor( Math.random() * 255 );
 }
 
+/**
+ * Función propuesta por el tutorial para elegir un color de manera aleatoria, de un arreglo de opciones pre-definidas.
+ * @return {String} [Retorno de 7 caracteres de una colección]
+ */
 function randomColorPalette(){
 	return colorArray[Math.floor( Math.random()*colorArray.length )];
 }
 
-function Circle (x, y, dx, dy, radius, color) {
+/**
+ * Función para generar un entero random dentro de un rango.
+ * @param  {int} min [Entero de N caracteres]
+ * @param  {int} max [Entero de N caracteres]
+ * @return {int}     [Retorno de entero de N caracteres]
+ */
+function randomIntFromRange(min,max){
+	return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
+
+function Ball(x, y, dx, dy, radius, color){
 	this.x = x;
 	this.y = y;
 	this.dx = dx;
 	this.dy = dy;
 	this.radius = radius;
-	this.minRadius = radius;
 	this.color = color;
 
-	this.draw = function(){
-		ctx.beginPath();
-		ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2,  false);
-		ctx.strokeStyle = color;
-		ctx.fillStyle = color;
-		ctx.stroke();
-		ctx.fill();
-	}
-
 	this.update = function(){
-		if (this.x + this.radius > innerWidth || this.x - this.radius < 0 ) {
-			this.dx = -this.dx;
+		if (this.y + this.radius + this.dy > canvas.height) {
+			this.dy = -this.dy * friction;
+		} else{
+			this.dy += gravity;
 		}
 
-		if (this.y + this.radius > innerHeight || this.y - this.radius < 0 ) {
-			this.dy = -this.dy;
+		if (this.x + this.radius +this. dx > canvas.width || this.x - this.radius < 0) {
+			this.dx = -this.dx;
 		}
 
 		this.x += this.dx;
 		this.y += this.dy;
-
-		if (mouse.x - this.x < 50 && mouse.x - this.x > -50 &&
-		 mouse.y - this.y < 50 && mouse.y - this.y > -50 ) {
-			if (this.radius < maxRadius){
-				this.radius += 1;
-			}
-		} else if(this.radius > this.minRadius){
-			this.radius -= 1;
-		};
-
 		this.draw();
+	};
+
+	this.draw = function(){
+		ctx.beginPath();
+		ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+		ctx.fillStyle = this.color;
+
+		ctx.fill();
+		ctx.stroke();
+		ctx.closePath();
 	}
 }
 
-var circleArray = [];
+
+
+var ball;
+var ballArray = [];
 
 function init(){
-
-	circleArray = [];
-
+	ballArray = [];
 	for (var i = 0; i < 400; i++) {
-		var x  = Math.floor(Math.random() * (innerWidth  - radius * 2)) + radius;
-		var y  = Math.floor(Math.random() * (innerHeight - radius * 2)) + radius;
-		var dx = (Math.random() - 0.5);
-		var dy = (Math.random() - 0.5);
-		var radius = Math.floor( Math.random() * 3 + 1 );
-		//var color = randomColor();
+		var radius = randomIntFromRange(8, 30);
+		var x = randomIntFromRange(radius, canvas.width - radius);
+		var y = randomIntFromRange(0, canvas.height - radius);
+		var dx = randomIntFromRange(-2, 2);
+		var dy = randomIntFromRange(-2, 2);
 		var color = randomColorPalette();
-		console.log(dx, dy);
-		circleArray.push(new Circle(x, y, dx, dy, radius, color));
+		ballArray.push(new Ball(x, y, dx, dy, radius, color));
 	}
-
-	animate();
 }
-
 
 function animate(){
 	requestAnimationFrame(animate);
-	ctx.clearRect(0, 0, innerWidth, innerHeight);
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-	for (var i = 0; i < circleArray.length; i++) {
-		circleArray[i].update();
+	for (var i = 0; i < ballArray.length; i++) {
+		ballArray[i].update();
 	};
 }
 
-
 init();
+animate();
