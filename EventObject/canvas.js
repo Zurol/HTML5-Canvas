@@ -65,7 +65,15 @@ function randomIntFromRange(min,max){
 	return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-
+/**
+ * [Objeto esfera]
+ * @param {float} x      [Posición X de la esfera]
+ * @param {float} y      [Posición Y de la esfera]
+ * @param {float} dx     [Velocidad de desplazamiento Dx]
+ * @param {float} dy     [Velocidad de desplazamiento Dy]
+ * @param {  int} radius [Tamaño del radio la esfera]
+ * @param {sting} color  [Color del llenado]
+ */
 function Ball(x, y, dx, dy, radius, color){
 	this.x = x;
 	this.y = y;
@@ -106,6 +114,10 @@ function Ball(x, y, dx, dy, radius, color){
 var ball;
 var ballArray = [];
 
+/**
+ * [Inicializador del dibujado + Inicialización de esferas con valores random]
+ * @return {} [Sin retorno]
+ */
 function init(){
 	ballArray = [];
 	for (var i = 0; i < 400; i++) {
