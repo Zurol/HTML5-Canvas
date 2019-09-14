@@ -111,13 +111,14 @@ let circle1;
 let circle2;
 
 /**
- * [Inicializador del dibujado]
+ * Dibujado de 2 círculos para evaluar la distancia entre ambos.
  * @return {} [Sin retorno]
  */
 function init(){
 	circle1 = new Circle(300, 300, 100, 'black');
 	circle2 = new Circle(undefined, undefined, 30, 'red');
 }
+
 
 function animate(){
 	requestAnimationFrame(animate);
