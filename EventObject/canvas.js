@@ -164,6 +164,7 @@ function Particle(x, y, radius, color){
 
 	this.radius = radius;
 	this.color = color;
+	this.mass = 1;
 
 	this.update = function(){
 		this.draw();
@@ -172,6 +173,7 @@ function Particle(x, y, radius, color){
 			if (this === particles[i]) continue;
 			if (getDistance(this.x, this.y, particles[i].x, particles[i].y) - this.radius * 2 < 0) {
 				console.log('has colided');
+				resolveCollision(this, particles[i]);
 			}
 		}
 
