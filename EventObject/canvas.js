@@ -38,6 +38,7 @@ addEventListener("click", function(){
 	init();
 });
 
+
 /**Utility Functions **/
 /**
  * Función que genera un código de RGB random, generada independiente al tutorial
@@ -47,6 +48,7 @@ function randomColor(){
 	return "#"+ Math.floor( Math.random() * 255 ) + ""+ Math.floor( Math.random() * 255 ) + ""+ Math.floor( Math.random() * 255 );
 }
 
+
 /**
  * Función propuesta por el tutorial para elegir un color de manera aleatoria, de un arreglo de opciones pre-definidas.
  * @return {String} [Retorno de 7 caracteres de una colección]
@@ -54,6 +56,7 @@ function randomColor(){
 function randomColorPalette(){
 	return colorArray[Math.floor( Math.random()*colorArray.length )];
 }
+
 
 /**
  * Función para generar un entero random dentro de un rango.
@@ -64,6 +67,7 @@ function randomColorPalette(){
 function randomIntFromRange(min,max){
 	return Math.floor(Math.random() * (max - min + 1) + min);
 }
+
 
 /**
  * Función para generar la distancia entre 2 puntos (x,y)
@@ -88,35 +92,80 @@ function getDistance(x1, y1, x2, y2){
  * @param {int} radius 	 [Dimensión del Radio del círculo]
  * @param {string} color [Color de relleno de la figura]
  */
-function Circle(x, y, radius, color){
+function Particle(x, y, radius, color){
 	this.x = x;
 	this.y = y;
+	this.velocity = {
+		x : Math.random() - 0.5,
+		y : Math.random() - 0.5
+	}
+
 	this.radius = radius;
 	this.color = color;
 
 	this.update = function(){
 		this.draw();
+
+		for (let i = 0; i < particles.length; i++) {
+			if (this === particles[i]) continue;
+			if (getDistance(this.x, this.y, particles[i].x, particles[i].y) - this.radius * 2 < 0) {
+				console.log('has colided');
+			}
+		}
+
+		if (this.x - this.radius <= 0 || this.x + this.radius >= innerWidth) {
+			this.velocity.x = -this.velocity.x;
+		}
+
+		if (this.y - this.radius <= 0 || this.y + this.radius >= innerHeight) {
+			this.velocity.y = -this.velocity.y;
+		}
+
+		this.x += this.velocity.x;
+		this.y += this.velocity.y;
 	}
 
 	this.draw = function(){
 		ctx.beginPath();
 		ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
-		ctx.fillStyle = this.color;
-		ctx.fill();
+		ctx.strokeStyle = this.color;
+		ctx.stroke();
 		ctx.closePath();
 	}
 }
 
-let circle1;
-let circle2;
+let particles;
+
+
 
 /**
  * Dibujado de 2 círculos para evaluar la distancia entre ambos.
  * @return {} [Sin retorno]
  */
 function init(){
-	circle1 = new Circle(300, 300, 100, 'black');
-	circle2 = new Circle(undefined, undefined, 30, 'red');
+	particles = [];
+
+	for (let i = 0; i < 4; i++) {
+		const radius = 100;
+		const color = randomColor();
+
+		let x = randomIntFromRange(radius, (canvas.width - radius));
+		let y = randomIntFromRange(radius, (canvas.height - radius));
+
+
+		if (i != 0) {
+			for (let j = 0; j < particles.length; j++) {
+				if (getDistance(x, y, particles[j].x, particles[j].y) - radius * 2 < 0) {
+					x = randomIntFromRange(radius, (canvas.width - radius));
+					y = randomIntFromRange(radius, (canvas.height - radius));
+
+					j = -1;
+				}
+			}
+		}
+
+		particles.push(new Particle(x, y, radius, color));
+	}
 }
 
 
@@ -124,18 +173,9 @@ function animate(){
 	requestAnimationFrame(animate);
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-	circle1.update();
-	circle2.x = mouse.x;
-	circle2.y = mouse.y;
-	circle2.update();
-
-	if (getDistance(circle1.x, circle1.y, circle2.x, circle2.y) < circle1.radius + circle2.radius) {
-		circle1.color = 'red';
-	} else{
-		circle1.color = 'black';
-	};
-
-	console.log(getDistance(circle1.x, circle1.y, circle2.x, circle2.y));
+	particles.forEach(particle => {
+		particle.update(particles);
+	 })
 }
 
 init();
