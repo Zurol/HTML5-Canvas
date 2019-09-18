@@ -9,7 +9,7 @@ var mouse = {
 	y : 10
 }
 
-var colorArray = [
+const colors = [
 	'#14080E',
 	'#49475B',
 	'#799496',
@@ -51,10 +51,11 @@ function randomColor(){
 
 /**
  * Función propuesta por el tutorial para elegir un color de manera aleatoria, de un arreglo de opciones pre-definidas.
- * @return {String} [Retorno de 7 caracteres de una colección]
+ * @param  {Array} min  [Arreglo con colores definidos en la paleta]
+ * @return {String} 	[Retorno de 7 caracteres de una colección]
  */
-function randomColorPalette(){
-	return colorArray[Math.floor( Math.random()*colorArray.length )];
+function randomColorPalette(colors){
+	return colors[Math.floor( Math.random()*colors.length )];
 }
 
 
@@ -70,7 +71,7 @@ function randomIntFromRange(min,max){
 
 
 /**
- * Función para generar la distancia entre 2 puntos (x,y)
+ * Función para generar la distancia entre 2 puntos (x,y).
  * @param  {float} x1 [Posicion del origen "X" del punto_1]
  * @param  {float} y1 [Posicion del origen "Y" del punto_1]
  * @param  {float} x2 [Posicion del origen "X" del punto_2]
@@ -211,7 +212,8 @@ function init(){
 
 	for (let i = 0; i < 400; i++) {
 		const radius = 10;
-		const color = randomColor();
+		//const color = randomColor();
+		const color = randomColorPalette(colors);
 
 		let x = randomIntFromRange(radius, (canvas.width - radius));
 		let y = randomIntFromRange(radius, (canvas.height - radius));
