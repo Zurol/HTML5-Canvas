@@ -159,18 +159,24 @@ function Particle(x, y, radius, color){
 	this.x = x;
 	this.y = y;
 	this.velocity = {
-		x : Math.random() - 0.5,
+		x : 0.05,
 		y : Math.random() - 0.5
 	}
 
 	this.radius = radius;
 	this.color = color;
-	this.mass = 1;
-	this.opacity = 0;
+	this.radians = 0;
+
+	//this.mass = 1;
+	//this.opacity = 0;
 
 	this.update = function(){
+		this.radians += this.velocity.x;
+		this.x = x + Math.cos(this.radians) * 100;
+		this.y = y + Math.sin(this.radians) * 100;
+		console.log(this.x);
 		this.draw();
-
+/*
 		for (let i = 0; i < particles.length; i++) {
 			if (this === particles[i]) continue;
 			if (getDistance(this.x, this.y, particles[i].x, particles[i].y) - this.radius * 2 < 0) {
@@ -197,18 +203,19 @@ function Particle(x, y, radius, color){
 
 		this.x += this.velocity.x;
 		this.y += this.velocity.y;
+		*/
 	}
 
 	this.draw = function(){
 		ctx.beginPath();
 		ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
-		ctx.save();
-		ctx.globalAlpha = this.opacity;
+		//ctx.save();
+		//ctx.globalAlpha = this.opacity;
 		ctx.fillStyle = this.color;
 		ctx.fill();
-		ctx.restore();
-		ctx.strokeStyle = this.color;
-		ctx.stroke();
+		//ctx.restore();
+		//ctx.strokeStyle = this.color;
+		//ctx.stroke();
 		ctx.closePath();
 	}
 }
@@ -224,7 +231,7 @@ let particles;
 function init(){
 	particles = [];
 
-	for (let i = 0; i < 400; i++) {
+	for (let i = 0; i < 1; i++) {
 		const radius = 10;
 		//const color = randomColor();
 		const color = randomColorPalette(colors);
