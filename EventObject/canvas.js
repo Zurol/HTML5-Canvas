@@ -166,6 +166,7 @@ function Particle(x, y, radius, color){
 	this.radius = radius;
 	this.color = color;
 	this.mass = 1;
+	this.opacity = 0;
 
 	this.update = function(){
 		this.draw();
@@ -173,7 +174,6 @@ function Particle(x, y, radius, color){
 		for (let i = 0; i < particles.length; i++) {
 			if (this === particles[i]) continue;
 			if (getDistance(this.x, this.y, particles[i].x, particles[i].y) - this.radius * 2 < 0) {
-				console.log('has colided');
 				resolveCollision(this, particles[i]);
 			}
 		}
@@ -186,6 +186,15 @@ function Particle(x, y, radius, color){
 			this.velocity.y = -this.velocity.y;
 		}
 
+		//Detección de colisión con mouse.
+		if (getDistance(mouse.x, mouse.y, this.x, this.y) < 120 && this.opacity < 0.2) {
+			this.opacity += 0.02;
+		} else if(this.opacity > 0){
+			this.opacity -= 0.02;
+			this.opacity = Math.max(0, this.opacity);
+		}
+
+
 		this.x += this.velocity.x;
 		this.y += this.velocity.y;
 	}
@@ -193,6 +202,11 @@ function Particle(x, y, radius, color){
 	this.draw = function(){
 		ctx.beginPath();
 		ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+		ctx.save();
+		ctx.globalAlpha = this.opacity;
+		ctx.fillStyle = this.color;
+		ctx.fill();
+		ctx.restore();
 		ctx.strokeStyle = this.color;
 		ctx.stroke();
 		ctx.closePath();
@@ -204,7 +218,7 @@ let particles;
 
 
 /**
- * Dibujado de 2 círculos para evaluar la distancia entre ambos.
+ * Dibujado de N círculos con colisiones y coloración al entrar en rango de cercanía con el mouse.
  * @return {[Null] [Sin retorno]
  */
 function init(){
