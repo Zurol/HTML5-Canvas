@@ -94,9 +94,9 @@ function getDistance(x1, y1, x2, y2){
  */
 function rotate (velocity, angle) {
 	const rotatedVelocities = {
-		x: velocity.x * Math.cos(angle) - velocity.y * Math.sin(angle),
-		y: velocity.x * Math.sin(angle) - velocity.y * Math.cos(angle),
-	}
+        x: velocity.x * Math.cos(angle) - velocity.y * Math.sin(angle),
+        y: velocity.x * Math.sin(angle) + velocity.y * Math.cos(angle)
+    };
 	return rotatedVelocities;
 }
 
@@ -209,8 +209,8 @@ let particles;
 function init(){
 	particles = [];
 
-	for (let i = 0; i < 4; i++) {
-		const radius = 100;
+	for (let i = 0; i < 400; i++) {
+		const radius = 10;
 		const color = randomColor();
 
 		let x = randomIntFromRange(radius, (canvas.width - radius));
