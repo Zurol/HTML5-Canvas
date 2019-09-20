@@ -166,20 +166,22 @@ function Particle(x, y, radius, color){
 	this.radius = radius;
 	this.color = color;
 	this.radians = Math.random() * Math.PI * 2;
-	this.distanceFromCenter = {
-		x: randomIntFromRange(50, 120),
-		y: randomIntFromRange(50, 120)
-	};
+	this.distanceFromCenter = randomIntFromRange(50, 120);
 
 	//this.mass = 1;
 	//this.opacity = 0;
 
 	this.update = function(){
+
+		const lastPoint = {
+			x : this.x,
+			y : this.y
+		};
+
 		this.radians += this.velocity.x;
-		this.x = x + Math.cos(this.radians) * this.distanceFromCenter.x;
-		this.y = y + Math.sin(this.radians) * 100;
-		console.log(this.x); //13:01
-		this.draw();
+		this.x = x + Math.cos(this.radians) * this.distanceFromCenter;
+		this.y = y + Math.sin(this.radians) * this.distanceFromCenter;
+		this.draw(lastPoint);
 /*
 		for (let i = 0; i < particles.length; i++) {
 			if (this === particles[i]) continue;
@@ -210,16 +212,19 @@ function Particle(x, y, radius, color){
 		*/
 	}
 
-	this.draw = function(){
+	this.draw = lastPoint => {
 		ctx.beginPath();
-		ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+		//ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+		ctx.strokeStyle = this.color;
+		var lineWidth = this.radius;
+		ctx.moveTo(lastPoint.x, lastPoint.y);
+		ctx.lineTo(this.x, this.y);
 		//ctx.save();
 		//ctx.globalAlpha = this.opacity;
-		ctx.fillStyle = this.color;
-		ctx.fill();
+		//ctx.fillStyle = this.color;
+		//ctx.fill();
 		//ctx.restore();
-		//ctx.strokeStyle = this.color;
-		//ctx.stroke();
+		ctx.stroke();
 		ctx.closePath();
 	}
 }
@@ -235,8 +240,8 @@ let particles;
 function init(){
 	particles = [];
 
-	for (let i = 0; i < 5; i++) {
-		const radius = 10;
+	for (let i = 0; i < 50; i++) {
+		const radius = 5;
 		//const color = randomColor();
 		const color = randomColorPalette(colors);
 
@@ -262,7 +267,9 @@ function init(){
 
 function animate(){
 	requestAnimationFrame(animate);
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+	ctx.fillRect(0, 0, canvas.width, canvas.height);
+	//ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 	particles.forEach(particle => {
 		particle.update(particles);
