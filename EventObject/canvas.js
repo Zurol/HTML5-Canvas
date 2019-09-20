@@ -165,16 +165,20 @@ function Particle(x, y, radius, color){
 
 	this.radius = radius;
 	this.color = color;
-	this.radians = 0;
+	this.radians = Math.random() * Math.PI * 2;
+	this.distanceFromCenter = {
+		x: randomIntFromRange(50, 120),
+		y: randomIntFromRange(50, 120)
+	};
 
 	//this.mass = 1;
 	//this.opacity = 0;
 
 	this.update = function(){
 		this.radians += this.velocity.x;
-		this.x = x + Math.cos(this.radians) * 100;
+		this.x = x + Math.cos(this.radians) * this.distanceFromCenter.x;
 		this.y = y + Math.sin(this.radians) * 100;
-		console.log(this.x);
+		console.log(this.x); //13:01
 		this.draw();
 /*
 		for (let i = 0; i < particles.length; i++) {
@@ -231,7 +235,7 @@ let particles;
 function init(){
 	particles = [];
 
-	for (let i = 0; i < 1; i++) {
+	for (let i = 0; i < 5; i++) {
 		const radius = 10;
 		//const color = randomColor();
 		const color = randomColorPalette(colors);
@@ -251,7 +255,7 @@ function init(){
 			}
 		}
 
-		particles.push(new Particle(x, y, radius, color));
+		particles.push(new Particle(canvas.width / 2, canvas.height / 2, radius, color));
 	}
 }
 
