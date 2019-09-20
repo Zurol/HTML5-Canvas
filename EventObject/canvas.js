@@ -167,7 +167,10 @@ function Particle(x, y, radius, color){
 	this.color = color;
 	this.radians = Math.random() * Math.PI * 2;
 	this.distanceFromCenter = randomIntFromRange(50, 120);
-
+	this.lastMouse = {
+		x: x,
+		y: y
+	}
 	//this.mass = 1;
 	//this.opacity = 0;
 
@@ -179,8 +182,13 @@ function Particle(x, y, radius, color){
 		};
 
 		this.radians += this.velocity.x;
-		this.x = x + Math.cos(this.radians) * this.distanceFromCenter;
-		this.y = y + Math.sin(this.radians) * this.distanceFromCenter;
+
+		//Drag Effect
+		this.lastMouse.x += (mouse.x - this.lastMouse.x) * 0.05;
+		this.lastMouse.y += (mouse.y - this.lastMouse.y) * 0.05;
+
+		this.x = this.lastMouse.x + Math.cos(this.radians) * this.distanceFromCenter;
+		this.y = this.lastMouse.y + Math.sin(this.radians) * this.distanceFromCenter;
 		this.draw(lastPoint);
 /*
 		for (let i = 0; i < particles.length; i++) {
@@ -241,14 +249,14 @@ function init(){
 	particles = [];
 
 	for (let i = 0; i < 50; i++) {
-		const radius = 5;
+		const radius = (Math.random() * 2) + 1;
 		//const color = randomColor();
 		const color = randomColorPalette(colors);
 
-		let x = randomIntFromRange(radius, (canvas.width - radius));
-		let y = randomIntFromRange(radius, (canvas.height - radius));
+		//let x = randomIntFromRange(radius, (canvas.width - radius));
+		//let y = randomIntFromRange(radius, (canvas.height - radius));
 
-
+		/*
 		if (i != 0) {
 			for (let j = 0; j < particles.length; j++) {
 				if (getDistance(x, y, particles[j].x, particles[j].y) - radius * 2 < 0) {
@@ -258,7 +266,7 @@ function init(){
 					j = -1;
 				}
 			}
-		}
+		} */
 
 		particles.push(new Particle(canvas.width / 2, canvas.height / 2, radius, color));
 	}
