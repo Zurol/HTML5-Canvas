@@ -4,6 +4,7 @@ var ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth-2;
 canvas.height = window.innerHeight-2;
 
+// Inicialización del puntero a mitad del screen para un mejor efecto visual.
 var mouse = {
 	x : canvas.width / 2,
 	y : canvas.height / 2
@@ -26,6 +27,7 @@ window.addEventListener('mousemove', function(event){
 	mouse.y = event.y;
 });
 
+//Reinicio de animación en cambios de resolución de pantalla.
 window.addEventListener('resize', function(){
 	canvas.width = window.innerWidth-2;
 	canvas.height = window.innerHeight-2;
@@ -104,6 +106,7 @@ function rotate (velocity, angle) {
 
 /**
  * Cambio de velocidades X y Y después de la colisión entre 2 partículas.
+ * Extracción directa del repositorio de utilidades del curso.
  * @param  {[Particle]} particle      [Partícula con Coordinadas(X,Y) y Velocidad(X,Y)]
  * @param  {[Particle]} otherParticle [Partícula con Coordinadas(X,Y) y Velocidad(X,Y)]
  * @return {[Null] 					  [Sin Retorno]
@@ -171,8 +174,6 @@ function Particle(x, y, radius, color){
 		x: x,
 		y: y
 	}
-	//this.mass = 1;
-	//this.opacity = 0;
 
 	this.update = function(){
 
@@ -183,55 +184,23 @@ function Particle(x, y, radius, color){
 
 		this.radians += this.velocity.x;
 
-		//Drag Effect
+		//Efecto de arrastre, define una razón vectorial intermedia para una transición paulatina.
 		this.lastMouse.x += (mouse.x - this.lastMouse.x) * 0.05;
 		this.lastMouse.y += (mouse.y - this.lastMouse.y) * 0.05;
 
+		//Efecto de rotación. Calculo de posiciones (x, y) para un incremento de grados constante por frame.
 		this.x = this.lastMouse.x + Math.cos(this.radians) * this.distanceFromCenter;
 		this.y = this.lastMouse.y + Math.sin(this.radians) * this.distanceFromCenter;
 		this.draw(lastPoint);
-/*
-		for (let i = 0; i < particles.length; i++) {
-			if (this === particles[i]) continue;
-			if (getDistance(this.x, this.y, particles[i].x, particles[i].y) - this.radius * 2 < 0) {
-				resolveCollision(this, particles[i]);
-			}
-		}
-
-		if (this.x - this.radius <= 0 || this.x + this.radius >= innerWidth) {
-			this.velocity.x = -this.velocity.x;
-		}
-
-		if (this.y - this.radius <= 0 || this.y + this.radius >= innerHeight) {
-			this.velocity.y = -this.velocity.y;
-		}
-
-		//Detección de colisión con mouse.
-		if (getDistance(mouse.x, mouse.y, this.x, this.y) < 120 && this.opacity < 0.2) {
-			this.opacity += 0.02;
-		} else if(this.opacity > 0){
-			this.opacity -= 0.02;
-			this.opacity = Math.max(0, this.opacity);
-		}
-
-
-		this.x += this.velocity.x;
-		this.y += this.velocity.y;
-		*/
 	}
 
+	//Transmisión de lasPoint para el "eco" visual de los trazos.
 	this.draw = lastPoint => {
 		ctx.beginPath();
-		//ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
 		ctx.strokeStyle = this.color;
 		var lineWidth = this.radius;
 		ctx.moveTo(lastPoint.x, lastPoint.y);
 		ctx.lineTo(this.x, this.y);
-		//ctx.save();
-		//ctx.globalAlpha = this.opacity;
-		//ctx.fillStyle = this.color;
-		//ctx.fill();
-		//ctx.restore();
 		ctx.stroke();
 		ctx.closePath();
 	}
@@ -242,7 +211,7 @@ let particles;
 
 
 /**
- * Dibujado de N círculos con colisiones y coloración al entrar en rango de cercanía con el mouse.
+ * Dibujado de N círculos que rotan alrededor de las coordenadas del mouse. Se define a la par la creación de líneas que afianzan el efecto visual de transición.
  * @return {[Null] [Sin retorno]
  */
 function init(){
@@ -250,23 +219,7 @@ function init(){
 
 	for (let i = 0; i < 50; i++) {
 		const radius = (Math.random() * 2) + 1;
-		//const color = randomColor();
 		const color = randomColorPalette(colors);
-
-		//let x = randomIntFromRange(radius, (canvas.width - radius));
-		//let y = randomIntFromRange(radius, (canvas.height - radius));
-
-		/*
-		if (i != 0) {
-			for (let j = 0; j < particles.length; j++) {
-				if (getDistance(x, y, particles[j].x, particles[j].y) - radius * 2 < 0) {
-					x = randomIntFromRange(radius, (canvas.width - radius));
-					y = randomIntFromRange(radius, (canvas.height - radius));
-
-					j = -1;
-				}
-			}
-		} */
 
 		particles.push(new Particle(canvas.width / 2, canvas.height / 2, radius, color));
 	}
@@ -275,9 +228,11 @@ function init(){
 
 function animate(){
 	requestAnimationFrame(animate);
+
+	//Valores definibles dentro de fillStyle para representar un degradado progresivo. En movimiento, la misma opacidad hace que se pierda gradualmente; y en reposo, la sobre escritura mantiene el color visualmente sólido.
+	//Revisar más a detalle que otras posibilidades se pueden generar con esta propiedad.
 	ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
 	ctx.fillRect(0, 0, canvas.width, canvas.height);
-	//ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 	particles.forEach(particle => {
 		particle.update(particles);
