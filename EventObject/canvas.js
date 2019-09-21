@@ -5,8 +5,8 @@ canvas.width = window.innerWidth-2;
 canvas.height = window.innerHeight-2;
 
 var mouse = {
-	x : 10,
-	y : 10
+	x : canvas.width / 2,
+	y : canvas.height / 2
 }
 
 const colors = [
